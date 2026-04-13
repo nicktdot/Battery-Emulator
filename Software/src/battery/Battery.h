@@ -57,6 +57,9 @@ enum class BatteryType {
   GeelySea = 50,
   ThunderstruckBMS = 51,
   EnnoidBMS = 52,
+  JkBms = 53,
+  JkBmsCan = 54,
+  JkBmsPbCan = 55,
   Highest
 };
 
