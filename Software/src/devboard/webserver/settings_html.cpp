@@ -787,6 +787,10 @@ String raw_settings_processor(const String& var, BatteryEmulatorSettingsStore& s
     return String(settings.getUInt("PYLONSEND", 0));
   }
 
+  if (var == "JKLOG") {
+    return settings.getBool("JKLOG") ? "checked" : "";
+  }
+
   if (var == "PYLONOFFSET") {
     return settings.getBool("PYLONOFFSET") ? "checked" : "";
   }
@@ -1074,6 +1078,31 @@ const char* getCANInterfaceName(CAN_Interface interface) {
             sel.addEventListener('change', ch);
             ch();
           });
+
+          /* Filter BATTCOMM options based on battery transport type (CAN vs RS485) */
+          (function(){
+            var rs485Batts={23:1,53:1}; /* DalyBms=23, JkBms=53 */
+            var serialComms={1:1,2:1};  /* Modbus=1, RS485=2 */
+            var canComms={3:1,4:1,5:1,6:1}; /* CanNative..CanFdAddon */
+            var bs=document.getElementById('battery');
+            var cs=document.getElementById('BATTCOMM');
+            if(!bs||!cs)return;
+            function filt(){
+              var bv=parseInt(bs.value);
+              if(bv===0){Array.from(cs.options).forEach(function(o){o.disabled=false;});return;}
+              var isSerial=rs485Batts[bv]||false;
+              Array.from(cs.options).forEach(function(o){
+                var cv=parseInt(o.value);
+                o.disabled=isSerial?!serialComms[cv]:!canComms[cv];
+                o.style.color=o.disabled?'#666':'';
+              });
+              if(cs.options[cs.selectedIndex]&&cs.options[cs.selectedIndex].disabled){
+                for(var i=0;i<cs.options.length;i++){if(!cs.options[i].disabled){cs.selectedIndex=i;break;}}
+              }
+            }
+            bs.addEventListener('change',filt);
+            filt();
+          })();
     </script>
 )rawliteral"
 
@@ -1180,6 +1209,13 @@ const char* getCANInterfaceName(CAN_Interface interface) {
     form[data-battery="16"] .if-socestimated,
     form[data-battery="26"] .if-socestimated,
     form[data-battery="41"] .if-socestimated {
+      display: contents;
+    }
+
+    form .if-jkbms { display: none; }
+    form[data-battery="53"] .if-jkbms,
+    form[data-battery="54"] .if-jkbms,
+    form[data-battery="55"] .if-jkbms {
       display: contents;
     }
 
@@ -1365,6 +1401,12 @@ const char* getCANInterfaceName(CAN_Interface interface) {
         <label>Battery chemistry: </label><select name='BATTCHEM'>
         %BATTCHEM%
         </select>
+        </div>
+
+        <div class="if-jkbms">
+        <label for='JKLOG'>Enhanced JK BMS Logging: </label>
+        <input type='checkbox' name='JKLOG' id='JKLOG' %JKLOG%
+        title="Enable verbose logging of all JK BMS CAN frames and decoded values for diagnostics"/>
         </div>
 
         <div class="if-pylon-battery">

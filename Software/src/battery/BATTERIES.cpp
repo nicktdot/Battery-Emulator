@@ -84,6 +84,12 @@ const char* name_for_battery_type(BatteryType type) {
       return ImievCZeroIonBattery::Name;
     case BatteryType::JaguarIpace:
       return JaguarIpaceBattery::Name;
+    case BatteryType::JkBms:
+      return JkBms::Name;
+    case BatteryType::JkBmsCan:
+      return JkBmsCan::Name;
+    case BatteryType::JkBmsPbCan:
+      return JkBmsPbCan::Name;
     case BatteryType::KiaEGmp:
       return KiaEGmpBattery::Name;
     case BatteryType::KiaHyundai64:
@@ -203,6 +209,12 @@ Battery* create_battery(BatteryType type) {
       return new ImievCZeroIonBattery();
     case BatteryType::JaguarIpace:
       return new JaguarIpaceBattery();
+    case BatteryType::JkBms:
+      return new JkBms();
+    case BatteryType::JkBmsCan:
+      return new JkBmsCan();
+    case BatteryType::JkBmsPbCan:
+      return new JkBmsPbCan();
     case BatteryType::Kia64FD:
       return new Kia64FDBattery();
     case BatteryType::KiaEGmp:
